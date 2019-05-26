@@ -1,3 +1,5 @@
 # for color ls `brew install coreutils`
-export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 alias ls="gls --color=auto"
+
+# mv files to ~/.Trash `brew install rmtrash`
+alias rm="rmtrash"
