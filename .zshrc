@@ -21,14 +21,15 @@ alias pjroot="git rev-parse --show-toplevel"
 grep() { command grep --color=tty "$@"; }
 
 cd() {
+    PJROOT=`git rev-parse --show-toplevel 2> /dev/null`
     if [ -z $1 ]; then
-        if [ -z $(git rev-parse --git-dir 2> /dev/null) ]; then
+        if [ -z $PJROOT ]; then
             builtin cd
         else
-            if [ `pwd` = `git rev-parse --show-toplevel` ];then
+            if [ `pwd` = $PJROOT ];then
                 builtin cd
             else
-                builtin cd `git rev-parse --show-toplevel`
+                builtin cd $PJROOT
             fi
         fi
     else
@@ -38,5 +39,5 @@ cd() {
 
 # Macの時はosx用の設定を読む
 if [ `uname` = "Darwin" ]; then
-    . ~/.zshrc.osx
+    source ~/.zshrc.osx
 fi
