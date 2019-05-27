@@ -6,10 +6,8 @@ workdir=$(pwd)
 for file in $(git ls-files | cut -d/ -f1 | uniq | grep -v setup.sh); do
     # シンボリックリンクが存在する場合はシンボリックリンクを削除する
     # osごとの設定ファイルはos次第にする
-    # ディレクトリ
-    #ln -s ${workdir}/${file} $HOME/$file
-    if [ -f ${workdir}/${file} ]; then
+    if [ -e $HOME/$file ]; then
         rm $HOME/$file
     fi
-    ln -s ${workdir}/${file} $HOME/$file
+    ln -s $workdir/$file $HOME/$file
 done
