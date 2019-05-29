@@ -123,6 +123,8 @@ unsetopt AUTOREMOVESLASH
 setopt INTERACTIVE_COMMENTS
 #語の途中でもカーソル位置で補完
 setopt COMPLETE_IN_WORD
+# フロー制御をオンにする
+setopt noflowcontrol
 
 bindkey "^I" menu-complete   # 展開する前に補完候補を出させる(Ctrl-iで補完するようにする)
 
