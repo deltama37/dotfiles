@@ -1,3 +1,4 @@
+# 履歴の設定
 HISTFILE=~/.zsh_history
 HISTSIZE=100000
 SAVEHIST=1000000
@@ -147,9 +148,39 @@ zle -N history-beginning-search-forward-end history-search-end
 bindkey '^R' history-incremental-pattern-search-backward
 bindkey '^S' history-incremental-pattern-search-forward
 
+# promptの設定
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' formats '[* %F{green}%b%f]'
+zstyle ':vcs_info:*' actionformats '[* %F{green}%b%f(%F{red}%a%f)]'
+precmd() {vcs_info}
+#RPROMPT='${vcs_info_msg_0_}'
+
+
+PROMPT='`left-prompt`'
+
+function left-prompt {
+  FIRST='178m%}'
+  FIRST_B='237m%}'
+  SECOND='007m%}'
+  SECOND_B='067m%}'
+
+  sharp='\uE0B0'
+  FG='%{\e[38;5;'
+  BG='%{\e[30;48;5;'
+  RESET='%{\e[0m%}'
+  USER_AND_HOST="${BG}${FIRST_B}${FG}${FIRST}"
+  DIR="${BG}${SECOND_B}${FG}${SECOND}"
+
+  echo "${USER_AND_HOST}%~${BG}${SECOND_B}${FG}${FIRST_B}${sharp} ${DIR}${vcs_info_msg_0_}${RESET}${FG}${SECOND_B}${sharp} ${RESET}"
+}
+
 # setup nodenv
 export PATH="$HOME/.nodenv/bin:$PATH"
 eval "$(nodenv init -)"
+
+# setup gopath
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
 
 # Macの時はosx用の設定を読む
 # Macのコマンドパスが変わるのでaliasの上に書く
