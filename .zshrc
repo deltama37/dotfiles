@@ -121,7 +121,7 @@ setopt COMPLETE_IN_WORD
 # フロー制御をオンにする
 setopt noflowcontrol
 
-bindkey "^I" menu-complete   # 展開する前に補完候補を出させる(Ctrl-iで補完するようにする)
+bindkey "^I" menu-complete # 展開する前に補完候補を出させる(Ctrl-iで補完するようにする)
 
 # 補完をする
 autoload -Uz compinit
@@ -155,64 +155,65 @@ zstyle ':vcs_info:*' actionformats '[* %F{green}%b%f(%F{red}%a%f)]'
 precmd() {vcs_info}
 #RPROMPT='${vcs_info_msg_0_}'
 
-RPROMPT=$'`branch-status-check` %~' # %~はpwd
-
-function branch-status-check {
+function branch-status-check() {
     local prefix branchname suffix
-        # .gitの中だから除外
-        if [[ "$PWD" =~ '/\.git(/.*)?$' ]]; then
-            return
-        fi
-        branchname=`get-branch-name`
-        # ブランチ名が無いので除外
-        if [[ -z $branchname ]]; then
-            return
-        fi
-        prefix=`get-branch-status` #色だけ返ってくる
-        suffix='%{'${reset_color}'%}'
-        echo ${prefix}${branchname}${suffix}
+    sharp='\uE0B0'
+    FIRST_B='237m%}'
+    FG='%{\e[38;5;'
+    BG='%{\e[30;48;5;'
+    # .gitの中だから除外
+    if [[ "$PWD" =~ '/\.git(/.*)?$' ]]; then
+        return
+    fi
+    branchname=$(get-branch-name)
+    # ブランチ名が無いので除外
+    if [[ -z $branchname ]]; then
+        return
+    fi
+    prefix=$(get-branch-status) #色だけ返ってくる
+    suffix='%{'${reset_color}'%}'
+    echo ${BG}${prefix}${FG}${FIRST_B}${sharp} ${prefix}${branchname} ${FG}${prefix}${sharp}${sharp} ${RESET}
 }
-function get-branch-name {
+function get-branch-name() {
     # gitディレクトリじゃない場合のエラーは捨てます
-    echo `git rev-parse --abbrev-ref HEAD 2> /dev/null`
+    echo $(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 }
-function get-branch-status {
+function get-branch-status() {
     local res color
-        output=`git status --short 2> /dev/null`
-        if [ -z "$output" ]; then
-            res=':' # status Clean
-            color='%{'${fg[green]}'%}'
-        elif [[ $output =~ "[\n]?\?\? " ]]; then
-            res='?:' # Untracked
-            color='%{'${fg[yellow]}'%}'
-        elif [[ $output =~ "[\n]? M " ]]; then
-            res='M:' # Modified
-            color='%{'${fg[red]}'%}'
-        else
-            res='A:' # Added to commit
-            color='%{'${fg[cyan]}'%}'
-        fi
-        # echo ${color}${res}'%{'${reset_color}'%}'
-        echo ${color} # 色だけ返す
+    output=$(git status --short 2>/dev/null)
+    if [ -z "$output" ]; then
+        res=':' # status Clean
+        color='%{'${bg[green]}'%}'
+    elif [[ $output =~ "[\n]?\?\? " ]]; then
+        res='?:' # Untracked
+        color='%{'${bg[yellow]}'%}'
+    elif [[ $output =~ "[\n]? M " ]]; then
+        res='M:' # Modified
+        color='%{'${bg[red]}'%}'
+    else
+        res='A:' # Added to commit
+        color='%{'${bg[cyan]}'%}'
+    fi
+    # echo ${color}${res}'%{'${reset_color}'%}'
+    echo ${color} # 色だけ返す
 }
-
 
 PROMPT='`left-prompt`'
 
-function left-prompt {
-  FIRST='178m%}'
-  FIRST_B='237m%}'
-  SECOND='007m%}'
-  SECOND_B='067m%}'
+function left-prompt() {
+    FIRST='178m%}'
+    FIRST_B='237m%}'
+    SECOND='007m%}'
+    SECOND_B='067m%}'
 
-  sharp='\uE0B0'
-  FG='%{\e[38;5;'
-  BG='%{\e[30;48;5;'
-  RESET='%{\e[0m%}'
-  USER_AND_HOST="${BG}${FIRST_B}${FG}${FIRST}"
-  DIR="${BG}${SECOND_B}${FG}${SECOND}"
+    sharp='\uE0B0'
+    FG='%{\e[38;5;'
+    BG='%{\e[30;48;5;'
+    RESET='%{\e[0m%}'
+    USER_AND_HOST="${BG}${FIRST_B}${FG}${FIRST}"
+    DIR="${BG}${SECOND_B}${FG}${SECOND}"
 
-  echo "${USER_AND_HOST}%~${BG}${SECOND_B}${FG}${FIRST_B}${sharp} ${DIR}${vcs_info_msg_0_}${RESET}${FG}${SECOND_B}${sharp} ${RESET}"
+    echo "${USER_AND_HOST}%~`branch-status-check`"
 }
 
 # setup nodenv
