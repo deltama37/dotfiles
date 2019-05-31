@@ -84,8 +84,6 @@ setopt MULTIOS
 setopt NUMERIC_GLOB_SORT
 # 補完候補リストの日本語を正しく表示
 setopt PRINT_EIGHT_BIT
-# 右プロンプトに入力がきたら消す
-setopt TRANSIENT_RPROMPT
 # 余分な空白は詰めて記録
 setopt HIST_IGNORE_SPACE
 # ヒストリファイルを上書きするのではなく、追加するようにする
@@ -196,7 +194,7 @@ function get-branch-status() {
 }
 
 PROMPT='`left-prompt`'
-
+RPROMPT='[%*]'
 function left-prompt() {
     FIRST='178m%}'
     FIRST_B='237m%}'
