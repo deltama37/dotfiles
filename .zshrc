@@ -122,6 +122,7 @@ setopt COMPLETE_IN_WORD
 setopt noflowcontrol
 
 bindkey "^I" menu-complete # 展開する前に補完候補を出させる(Ctrl-iで補完するようにする)
+bindkey "^[[Z" reverse-menu-complete  # Shift-Tabで補完候補を逆順する("\e[Z"でも動作する)
 
 # 補完をする
 autoload -Uz compinit
@@ -148,31 +149,27 @@ zle -N history-beginning-search-forward-end history-search-end
 bindkey '^R' history-incremental-pattern-search-backward
 bindkey '^S' history-incremental-pattern-search-forward
 
-# promptの設定
-autoload -Uz vcs_info
-zstyle ':vcs_info:*' formats '[* %F{green}%b%f]'
-zstyle ':vcs_info:*' actionformats '[* %F{green}%b%f(%F{red}%a%f)]'
-precmd() {vcs_info}
-#RPROMPT='${vcs_info_msg_0_}'
-
 function branch-status-check() {
     local prefix branchname suffix
     sharp='\uE0B0'
     FIRST_B='237m%}'
+    FIRST='001m%}'
     FG='%{\e[38;5;'
     BG='%{\e[30;48;5;'
+    RESET='%{\e[0m%}'
     # .gitの中だから除外
     if [[ "$PWD" =~ '/\.git(/.*)?$' ]]; then
+        echo ${FG}${FIRST_B}${sharp}${RESET}
         return
     fi
     branchname=$(get-branch-name)
     # ブランチ名が無いので除外
     if [[ -z $branchname ]]; then
+        echo ${FG}${FIRST_B}${sharp}${RESET}
         return
     fi
     prefix=$(get-branch-status) #色だけ返ってくる
-    suffix='%{'${reset_color}'%}'
-    echo ${BG}${prefix}${FG}${FIRST_B}${sharp} ${prefix}${branchname} ${FG}${prefix}${sharp}${sharp} ${RESET}
+    echo "${BG}${prefix}m%}${FG}${FIRST_B}${sharp}${RESET}${BG}${prefix}m%}${branchname}${RESET}${FG}${prefix}m%}${sharp}${RESET}"
 }
 function get-branch-name() {
     # gitディレクトリじゃない場合のエラーは捨てます
@@ -183,16 +180,16 @@ function get-branch-status() {
     output=$(git status --short 2>/dev/null)
     if [ -z "$output" ]; then
         res=':' # status Clean
-        color='%{'${bg[green]}'%}'
+        color='002' # green
     elif [[ $output =~ "[\n]?\?\? " ]]; then
         res='?:' # Untracked
-        color='%{'${bg[yellow]}'%}'
+        color='003' # yellow
     elif [[ $output =~ "[\n]? M " ]]; then
         res='M:' # Modified
-        color='%{'${bg[red]}'%}'
+        color='001' # red
     else
         res='A:' # Added to commit
-        color='%{'${bg[cyan]}'%}'
+        color='004' # cyan
     fi
     # echo ${color}${res}'%{'${reset_color}'%}'
     echo ${color} # 色だけ返す
@@ -212,8 +209,7 @@ function left-prompt() {
     RESET='%{\e[0m%}'
     USER_AND_HOST="${BG}${FIRST_B}${FG}${FIRST}"
     DIR="${BG}${SECOND_B}${FG}${SECOND}"
-
-    echo "${USER_AND_HOST}%~`branch-status-check`"
+    echo "${USER_AND_HOST}%~${RESET}`branch-status-check`$ "
 }
 
 # setup nodenv
