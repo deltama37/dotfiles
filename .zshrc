@@ -214,6 +214,16 @@ function left-prompt() {
 export PATH="$HOME/.nodenv/bin:$PATH"
 eval "$(nodenv init -)"
 
+# setup pyenv
+PYENV_ROOT="$HOME/.pyenv"
+PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
+# setup rbenv
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+
 # setup gopath
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
@@ -227,21 +237,23 @@ fi
 alias l="ls"
 alias la="ls -a"
 alias ll="ls -l"
+alias sl="ls"
 
 # 色付きのgrep拡張
 grep() { command grep --color=tty "$@"; }
 
 # cdコマンドでgitのtoprevelにすぐに移動できるように変更
 cd() {
-    PJROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+    local pjroot
+    pjroot=$(git rev-parse --show-toplevel 2>/dev/null)
     if [ -z $1 ]; then
-        if [ -z $PJROOT ]; then
+        if [ -z $pjroot ]; then
             builtin cd
         else
-            if [ $(pwd) = $PJROOT ]; then
+            if [ $pjroot = `pwd` ]; then
                 builtin cd
             else
-                builtin cd $PJROOT
+                builtin cd $pjroot
             fi
         fi
     else
