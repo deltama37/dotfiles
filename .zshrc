@@ -210,6 +210,11 @@ function left-prompt() {
     echo "${USER_AND_HOST}%~${RESET}`branch-status-check`$ "
 }
 
+# setup GOPATH
+export GOROOT="/usr/local/opt/go/libexec"
+export GOPATH="$HOME/go"
+export PATH="$PATH:$GOPATH/bin:$GOROOT/bin"
+
 # setup nodenv
 export PATH="$HOME/.nodenv/bin:$PATH"
 eval "$(nodenv init -)"
@@ -224,9 +229,8 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
-# setup gopath
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin
+# setup flutter
+PATH="$HOME/bin/flutter/bin:$PATH"
 
 # Macの時はosx用の設定を読む
 # Macのコマンドパスが変わるのでaliasの上に書く
@@ -260,3 +264,6 @@ cd() {
         builtin cd $1
     fi
 }
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+

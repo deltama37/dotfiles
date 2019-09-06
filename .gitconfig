@@ -1,3 +1,11 @@
 [user]
-	name = Ryota Misumi
+	name = ryota misumi
 	email = 3delta7@gmail.com
+[core]
+	excludesfile = /Users/delta/.gitignore_global
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
